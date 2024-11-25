@@ -1,3 +1,7 @@
+# Trac & Magic Degen
+
+TracSystems, operating "Magic Degen" for the Dogecoin ecosystem, offers a suite of repositories designed to provide seamless, secure, and decentralized tracking solutions. These repositories are tailored to the unique requirements of Dogecoin, enabling developers to integrate advanced tracking functionalities into their applications.
+
 # Shibes
 
 ℹ️ This is a fork/based on [apezord/ord-dogecoin](https://github.com/apezord/ord-dogecoin)
