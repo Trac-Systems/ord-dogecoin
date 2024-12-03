@@ -31,25 +31,25 @@ pub struct ExecutionMessage {
   pub(self) op: Operation,
 }
 
-pub(super) struct Drc20Updater<'a, 'db, 'tx> {
-    drc20_token_info: &'a mut Table<'db, 'tx, &'static str, &'static [u8]>,
-    drc20_token_holder: &'a mut MultimapTable<'db, 'tx, &'static str, &'static str>,
-    drc20_token_balance: &'a mut Table<'db, 'tx, &'static str, &'static [u8]>,
-    drc20_inscribe_transfer: &'a mut Table<'db, 'tx, &'static [u8; 36], &'static [u8]>,
-    drc20_transferable_log: &'a mut Table<'db, 'tx, &'static str, &'static [u8]>,
-    inscription_id_to_inscription_entry: &'a Table<'db, 'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
-    transaction_id_to_transaction: &'a mut Table<'db, 'tx, &'static TxidValue, &'static [u8]>,
+pub(super) struct Drc20Updater<'a, 'tx> {
+    drc20_token_info: &'a mut Table<'tx, &'static str, &'static [u8]>,
+    drc20_token_holder: &'a mut MultimapTable<'tx, &'static str, &'static str>,
+    drc20_token_balance: &'a mut Table<'tx, &'static str, &'static [u8]>,
+    drc20_inscribe_transfer: &'a mut Table<'tx, &'static [u8; 36], &'static [u8]>,
+    drc20_transferable_log: &'a mut Table<'tx, &'static str, &'static [u8]>,
+    inscription_id_to_inscription_entry: &'a Table<'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
+    transaction_id_to_transaction: &'a mut Table<'tx, &'static TxidValue, &'static [u8]>,
 }
 
-impl<'a, 'db, 'tx> Drc20Updater<'a, 'db, 'tx> {
+impl<'a, 'db, 'tx> Drc20Updater<'a, 'tx> {
     pub(super) fn new(
-        drc20_token_info: &'a mut Table<'db, 'tx, &'static str, &'static [u8]>,
-        drc20_token_holder: &'a mut MultimapTable<'db, 'tx, &'static str, &'static str>,
-        drc20_token_balance: &'a mut Table<'db, 'tx, &'static str, &'static [u8]>,
-        drc20_inscribe_transfer: &'a mut Table<'db, 'tx, &'static [u8; 36], &'static [u8]>,
-        drc20_transferable_log: &'a mut Table<'db, 'tx, &'static str, &'static [u8]>,
-        inscription_id_to_inscription_entry: &'a Table<'db, 'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
-        transaction_id_to_transaction: &'a mut Table<'db, 'tx, &'static TxidValue, &'static [u8]>,
+        drc20_token_info: &'a mut Table<'tx, &'static str, &'static [u8]>,
+        drc20_token_holder: &'a mut MultimapTable<'tx, &'static str, &'static str>,
+        drc20_token_balance: &'a mut Table<'tx, &'static str, &'static [u8]>,
+        drc20_inscribe_transfer: &'a mut Table<'tx, &'static [u8; 36], &'static [u8]>,
+        drc20_transferable_log: &'a mut Table<'tx, &'static str, &'static [u8]>,
+        inscription_id_to_inscription_entry: &'a Table<'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
+        transaction_id_to_transaction: &'a mut Table<'tx, &'static TxidValue, &'static [u8]>,
     ) -> Result<Self> {
         Ok(Self {
             drc20_token_info,

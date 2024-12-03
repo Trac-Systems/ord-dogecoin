@@ -1,3 +1,4 @@
+use redb::ReadableTableMetadata;
 use {
   self::{
     dunes::{Dune, DuneId},
@@ -443,11 +444,12 @@ impl Index {
 
   pub(crate) fn info(&self) -> Result<Info> {
     let wtx = self.begin_write()?;
+    let rtx = self.database.begin_read()?;
 
     let stats = wtx.stats()?;
 
     let info = {
-      let statistic_to_count = wtx.open_table(STATISTIC_TO_COUNT)?;
+      let statistic_to_count = rtx.open_table(STATISTIC_TO_COUNT)?;
       let sat_ranges = statistic_to_count
         .get(&Statistic::SatRanges.key())?
         .map(|x| x.value())
@@ -456,7 +458,7 @@ impl Index {
         .get(&Statistic::OutputsTraversed.key())?
         .map(|x| x.value())
         .unwrap_or(0);
-      let transactions: Vec<TransactionInfo> = wtx
+      let transactions: Vec<TransactionInfo> = rtx
         .open_table(WRITE_TRANSACTION_STARTING_BLOCK_COUNT_TO_TIMESTAMP)?
         .range(0..)?
         .map(|result| {
@@ -470,7 +472,7 @@ impl Index {
         .collect::<Result<Vec<_>, _>>()?;
       Info {
         index_path: self.path.clone(),
-        blocks_indexed: wtx
+        blocks_indexed: rtx
           .open_table(HEIGHT_TO_BLOCK_HASH)?
           .range(0..)?
           .rev()
@@ -489,7 +491,7 @@ impl Index {
         stored_bytes: stats.stored_bytes(),
         transactions,
         tree_height: stats.tree_height(),
-        utxos_indexed: wtx.open_table(OUTPOINT_TO_SAT_RANGES)?.len()?,
+        utxos_indexed: rtx.open_table(OUTPOINT_TO_SAT_RANGES)?.len()?,
       }
     };
 

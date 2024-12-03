@@ -29,8 +29,8 @@ pub struct Message {
 }
 
 impl Message {
-  pub(crate) fn resolve<'a, 'db, 'tx>(
-    drc20_inscribe_transfer: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, &'static [u8]>,
+  pub(crate) fn resolve<'a, 'tx>(
+    drc20_inscribe_transfer: &'a mut Table<'tx, &'static InscriptionIdValue, &'static [u8]>,
     new_inscriptions: &[Inscription],
     op: &InscriptionOp,
   ) -> Result<Option<Message>> {
@@ -88,8 +88,8 @@ impl Message {
   }
 }
 
-fn get_inscribe_transfer_inscription<'a, 'db, 'tx>(
-  drc20_inscribe_transfer: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, &'static [u8]>,
+fn get_inscribe_transfer_inscription<'a, 'tx>(
+  drc20_inscribe_transfer: &'a mut Table<'tx, &'static InscriptionIdValue, &'static [u8]>,
   inscription_id: InscriptionId,
 ) -> Result<Option<TransferInfo>, redb::Error> {
   Ok(

@@ -3,9 +3,9 @@ use {
   bitcoin::hashes::{sha256d},
 };
 
-pub(crate) struct Rtx<'a>(pub(crate) redb::ReadTransaction<'a>);
+pub(crate) struct Rtx(pub(crate) redb::ReadTransaction);
 
-impl Rtx<'_> {
+impl Rtx {
   pub(crate) fn height(&self) -> Result<Option<Height>> {
     Ok(
       self

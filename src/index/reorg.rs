@@ -2,6 +2,11 @@ use std::env;
 use serde_json::json;
 use {super::*, updater::BlockData};
 
+// hack
+use std::fs::OpenOptions;
+use std::io::Write;
+// hack end
+
 #[derive(Debug, PartialEq)]
 pub(crate) enum ReorgError {
   Recoverable { height: u32, depth: u32 },
@@ -34,6 +39,7 @@ impl Reorg {
     match index.block_hash(height.checked_sub(1))? {
       Some(index_prev_blockhash) if index_prev_blockhash == bitcoind_prev_blockhash => Ok(()),
       Some(index_prev_blockhash) if index_prev_blockhash != bitcoind_prev_blockhash => {
+
         let max_recoverable_reorg_depth =
           (MAX_SAVEPOINTS - 1) * SAVEPOINT_INTERVAL + height % SAVEPOINT_INTERVAL;
 

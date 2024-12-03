@@ -17,6 +17,13 @@ mod drc20_updater;
 mod dune_updater;
 mod inscription_updater;
 
+// hack
+use std::fs::OpenOptions;
+use std::fs;
+use std::path::Path;
+use std::io::Write;
+// hack end
+
 pub(crate) struct BlockData {
   pub(crate) header: BlockHeader,
   pub(crate) txdata: Vec<(Transaction, Txid)>,
@@ -329,6 +336,7 @@ impl<'index> Updater<'_> {
     block: BlockData,
     value_cache: &mut HashMap<OutPoint, OutPointMapValue>,
   ) -> Result<()> {
+
     Reorg::detect_reorg(&block, self.height, self.index)?;
 
     let start = Instant::now();
@@ -416,6 +424,7 @@ impl<'index> Updater<'_> {
 
     {
       let mut inscription_updater = InscriptionUpdater::new(
+        self.index, // hack
         self.height,
         &mut inscription_id_to_satpoint,
         &mut inscription_id_to_txids,

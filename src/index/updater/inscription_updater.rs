@@ -19,50 +19,52 @@ enum Origin {
   Old(SatPoint),
 }
 
-pub(super) struct InscriptionUpdater<'a, 'db, 'tx> {
+pub(super) struct InscriptionUpdater<'a, 'tx> {
   flotsam: Vec<Flotsam>,
+  pub(super) index : &'a Index, // hack
   pub(super) operations: HashMap<Txid, Vec<InscriptionOp>>,
   height: u32,
-  id_to_satpoint: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, &'static SatPointValue>,
-  id_to_txids: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, &'static [u8]>,
-  txid_to_tx: &'a mut Table<'db, 'tx, &'static [u8], &'static [u8]>,
-  partial_txid_to_txids: &'a mut Table<'db, 'tx, &'static [u8], &'static [u8]>,
+  id_to_satpoint: &'a mut Table<'tx, &'static InscriptionIdValue, &'static SatPointValue>,
+  id_to_txids: &'a mut Table<'tx, &'static InscriptionIdValue, &'static [u8]>,
+  txid_to_tx: &'a mut Table<'tx, &'static [u8], &'static [u8]>,
+  partial_txid_to_txids: &'a mut Table<'tx, &'static [u8], &'static [u8]>,
   value_receiver: &'a mut Receiver<u64>,
   index_transactions: bool,
   transaction_buffer: Vec<u8>,
-  transaction_id_to_transaction: &'a mut Table<'db, 'tx, &'static TxidValue, &'static [u8]>,
-  id_to_entry: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
+  transaction_id_to_transaction: &'a mut Table<'tx, &'static TxidValue, &'static [u8]>,
+  id_to_entry: &'a mut Table<'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
   lost_sats: u64,
   next_number: u64,
-  number_to_id: &'a mut Table<'db, 'tx, u64, &'static InscriptionIdValue>,
-  outpoint_to_value: &'a mut Table<'db, 'tx, &'static OutPointValue, u64>,
-  address_to_outpoint: &'a mut MultimapTable<'db, 'tx, &'static [u8], &'static OutPointValue>,
+  number_to_id: &'a mut Table<'tx, u64, &'static InscriptionIdValue>,
+  outpoint_to_value: &'a mut Table<'tx, &'static OutPointValue, u64>,
+  address_to_outpoint: &'a mut MultimapTable<'tx, &'static [u8], &'static OutPointValue>,
   reward: u64,
-  sat_to_inscription_id: &'a mut Table<'db, 'tx, u64, &'static InscriptionIdValue>,
-  satpoint_to_id: &'a mut Table<'db, 'tx, &'static SatPointValue, &'static InscriptionIdValue>,
+  sat_to_inscription_id: &'a mut Table<'tx, u64, &'static InscriptionIdValue>,
+  satpoint_to_id: &'a mut Table<'tx, &'static SatPointValue, &'static InscriptionIdValue>,
   timestamp: u32,
   value_cache: &'a mut HashMap<OutPoint, OutPointMapValue>,
   chain: Chain,
 }
 
-impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
+impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'tx> {
   pub(super) fn new(
+    index : &'a Index, // hack
     height: u32,
-    id_to_satpoint: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, &'static SatPointValue>,
-    id_to_txids: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, &'static [u8]>,
-    txid_to_tx: &'a mut Table<'db, 'tx, &'static [u8], &'static [u8]>,
-    partial_txid_to_txids: &'a mut Table<'db, 'tx, &'static [u8], &'static [u8]>,
+    id_to_satpoint: &'a mut Table<'tx, &'static InscriptionIdValue, &'static SatPointValue>,
+    id_to_txids: &'a mut Table<'tx, &'static InscriptionIdValue, &'static [u8]>,
+    txid_to_tx: &'a mut Table<'tx, &'static [u8], &'static [u8]>,
+    partial_txid_to_txids: &'a mut Table<'tx, &'static [u8], &'static [u8]>,
     value_receiver: &'a mut Receiver<u64>,
     index_transactions: bool,
     transaction_buffer: Vec<u8>,
-    transaction_id_to_transaction: &'a mut Table<'db, 'tx, &'static TxidValue, &'static [u8]>,
-    id_to_entry: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
+    transaction_id_to_transaction: &'a mut Table<'tx, &'static TxidValue, &'static [u8]>,
+    id_to_entry: &'a mut Table<'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
     lost_sats: u64,
-    number_to_id: &'a mut Table<'db, 'tx, u64, &'static InscriptionIdValue>,
-    outpoint_to_value: &'a mut Table<'db, 'tx, &'static OutPointValue, u64>,
-    address_to_outpoint: &'a mut MultimapTable<'db, 'tx, &'static [u8], &'static OutPointValue>,
-    sat_to_inscription_id: &'a mut Table<'db, 'tx, u64, &'static InscriptionIdValue>,
-    satpoint_to_id: &'a mut Table<'db, 'tx, &'static SatPointValue, &'static InscriptionIdValue>,
+    number_to_id: &'a mut Table<'tx, u64, &'static InscriptionIdValue>,
+    outpoint_to_value: &'a mut Table<'tx, &'static OutPointValue, u64>,
+    address_to_outpoint: &'a mut MultimapTable<'tx, &'static [u8], &'static OutPointValue>,
+    sat_to_inscription_id: &'a mut Table<'tx, u64, &'static InscriptionIdValue>,
+    satpoint_to_id: &'a mut Table<'tx, &'static SatPointValue, &'static InscriptionIdValue>,
     timestamp: u32,
     value_cache: &'a mut HashMap<OutPoint, OutPointMapValue>,
     chain: Chain,
@@ -77,6 +79,7 @@ impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
 
     Ok(Self {
       flotsam: Vec::new(),
+      index, // hack
       operations: HashMap::new(),
       height,
       id_to_satpoint,
@@ -312,6 +315,7 @@ impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
           input_sat_ranges,
           inscriptions.next().unwrap(),
           new_satpoint,
+          tx
         )?;
       }
 
@@ -347,7 +351,7 @@ impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
           outpoint: OutPoint::null(),
           offset: self.lost_sats + flotsam.offset - output_value,
         };
-        self.update_inscription_location(input_sat_ranges, flotsam, new_satpoint)?;
+        self.update_inscription_location(input_sat_ranges, flotsam, new_satpoint, tx)?;
       }
 
       Ok(self.reward - output_value)
@@ -366,6 +370,7 @@ impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
     input_sat_ranges: Option<&VecDeque<(u64, u64)>>,
     flotsam: Flotsam,
     new_satpoint: SatPoint,
+    tx: &Transaction // hack
   ) -> Result {
     let inscription_id = flotsam.inscription_id.store();
 
@@ -413,6 +418,10 @@ impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
       }
     }
 
+    // hack
+    let _satpoint = new_satpoint.clone();
+    // hack
+
     let new_satpoint = new_satpoint.store();
 
     self
@@ -430,9 +439,9 @@ impl<'a, 'db, 'tx> InscriptionUpdater<'a, 'db, 'tx> {
             Origin::Old(_) => Action::Transfer,
             Origin::New {
               fee: _,
-              inscription,
+              ref inscription, // hack: ref added
             } => Action::New {
-              inscription,
+              inscription : inscription.clone(), // hack: clone added
             },
           },
           old_satpoint: flotsam.old_satpoint,

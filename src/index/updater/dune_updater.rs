@@ -20,34 +20,33 @@ struct Allocation {
   turbo: bool,
 }
 
-pub(super) struct DuneUpdater<'a, 'db, 'tx> {
+pub(super) struct DuneUpdater<'a, 'tx> {
   height: u32,
-  id_to_entry: &'a mut Table<'db, 'tx, DuneIdValue, DuneEntryValue>,
+  id_to_entry: &'a mut Table<'tx, DuneIdValue, DuneEntryValue>,
   inscription_id_to_inscription_entry:
-  &'a Table<'db, 'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
-  inscription_id_to_dune: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, u128>,
+  &'a Table<'tx, &'static InscriptionIdValue, InscriptionEntryValue>,
+  inscription_id_to_dune: &'a mut Table<'tx, &'static InscriptionIdValue, u128>,
   minimum: Dune,
-  outpoint_to_balances: &'a mut Table<'db, 'tx, &'static OutPointValue, &'static [u8]>,
-  dune_to_id: &'a mut Table<'db, 'tx, u128, DuneIdValue>,
+  outpoint_to_balances: &'a mut Table<'tx, &'static OutPointValue, &'static [u8]>,
+  dune_to_id: &'a mut Table<'tx, u128, DuneIdValue>,
   dunes: u64,
-  statistic_to_count: &'a mut Table<'db, 'tx, u64, u64>,
+  statistic_to_count: &'a mut Table<'tx, u64, u64>,
   timestamp: u32,
 }
 
-impl<'a, 'db, 'tx> DuneUpdater<'a, 'db, 'tx> {
+impl<'a, 'db, 'tx> DuneUpdater<'a, 'tx> {
   pub(super) fn new(
     height: u32,
-    outpoint_to_balances: &'a mut Table<'db, 'tx, &'static OutPointValue, &'static [u8]>,
-    id_to_entry: &'a mut Table<'db, 'tx, DuneIdValue, DuneEntryValue>,
+    outpoint_to_balances: &'a mut Table<'tx, &'static OutPointValue, &'static [u8]>,
+    id_to_entry: &'a mut Table<'tx, DuneIdValue, DuneEntryValue>,
     inscription_id_to_inscription_entry: &'a Table<
-      'db,
       'tx,
       &'static InscriptionIdValue,
       InscriptionEntryValue,
     >,
-    inscription_id_to_dune: &'a mut Table<'db, 'tx, &'static InscriptionIdValue, u128>,
-    dune_to_id: &'a mut Table<'db, 'tx, u128, DuneIdValue>,
-    statistic_to_count: &'a mut Table<'db, 'tx, u64, u64>,
+    inscription_id_to_dune: &'a mut Table<'tx, &'static InscriptionIdValue, u128>,
+    dune_to_id: &'a mut Table<'tx, u128, DuneIdValue>,
+    statistic_to_count: &'a mut Table<'tx, u64, u64>,
     timestamp: u32,
     minimum: Dune,
   ) -> Result<Self> {

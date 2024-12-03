@@ -1,8 +1,13 @@
+# Shibes
 # Trac & Magic Degen
 
 TracSystems, operating "Magic Degen" for the Dogecoin ecosystem, offers a suite of repositories designed to provide seamless, secure, and decentralized tracking solutions. These repositories are tailored to the unique requirements of Dogecoin, enabling developers to integrate advanced tracking functionalities into their applications.
 
-# Shibes
+To safe you a lot of indexing time, we provided a download for a pre-indexed redb file. The parent wonky-ord ord client won't work, because this fork is using redb 2.2.0, which is incompatible.
+
+Please [download the file here](https://legacy.trac.network/doginals-nodrc20-nodunes-redb220.redb) (approx. 300GB) and follow the instructions below to start the index.
+
+**WARNING**: this file is only for a plain inscription index and does NOT include DRC-20 and Dunes indexed data!
 
 ℹ️ This is a fork/based on [apezord/ord-dogecoin](https://github.com/apezord/ord-dogecoin)
 
@@ -45,6 +50,16 @@ export STARTING_SATS_PATH=/home/dogeuser/wonky-ord-dogecoin/starting_sats.json
 mkdir -p /mnt/ord-node/indexer-data-main
 
 # replace YOUR_RPC_URL with the URL of your Dogecoin node like: http://foo:bar@127.0.0.1:22555
+
+// WITH PRE-INDEXED FILE (no drc20, no dunes, just inscriptions, see download above)
+
+// Start Indexing
+ord --rpc-url=http://foo:bar@YOURIP:25555 --first-inscription-height=4609723 --nr-parallel-requests=16 --index=/path/to/doginals-nodrc20-nodunes-redb220.redb index
+
+// Start Indexing + Server
+ord --rpc-url=http://foo:bar@YOURIP:25555 --first-inscription-height=4609723 --nr-parallel-requests=16 --index=/path/to/doginals-nodrc20-nodunes-redb220.redb server --address YOURIP --http-port YOURPORT
+
+// WITHOUT PRE-INDEXED FILE (from scratch, can take many days)
 
 // Start Indexing
 ord --rpc-url=YOUR_RPC_URL --data-dir=/mnt/ord-node/indexer-data-main --nr-parallel-requests=16 --first-inscription-height=4609723 --first-dune-height=5084000 --index-dunes --index-transactions --index-drc20 index
