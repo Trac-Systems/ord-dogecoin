@@ -300,6 +300,7 @@ impl Index {
         let tx = {
           let mut tx = tx;
           tx.set_durability(redb::Durability::None);
+          tx.set_quick_repair(true);
           tx
         };
 
@@ -538,6 +539,7 @@ impl Index {
     if cfg!(test) {
       let mut tx = self.database.begin_write()?;
       tx.set_durability(redb::Durability::None);
+      tx.set_quick_repair(true);
       Ok(tx)
     } else {
       Ok(self.database.begin_write()?)
