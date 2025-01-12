@@ -3,7 +3,9 @@
 
 TracSystems, operating "Magic Degen" for the Dogecoin ecosystem, offers a suite of repositories designed to provide seamless, secure, and decentralized tracking solutions. These repositories are tailored to the unique requirements of Dogecoin, enabling developers to integrate advanced tracking functionalities into their applications.
 
-To safe you a lot of indexing time, we provided a download for a pre-indexed redb file. The parent wonky-ord ord client won't work, because this fork is using redb 2.2.0, which is incompatible.
+To safe you a lot of indexing time, we provided a download for a pre-indexed redb file. The parent wonky-ord ord client won't work, because this fork is using redb 2.4.0, which is incompatible.
+
+The use of the latest Redb version introduces massive speed and stability improvements over previous versions.
 
 Please [download the file here](https://legacy.trac.network/doginals-nodrc20-nodunes-redb220.redb) (approx. 300GB) and follow the instructions below to start the index.
 
